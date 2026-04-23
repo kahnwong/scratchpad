@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Scratchpad
+Comment=Scratchpad for when you need to edit/note snippets
+Exec=scratchpad
+Icon=io.github.kahnwong.Scratchpad
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Utility;

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.kahnwong.Scratchpad</id>
+  <name>Scratchpad</name>
+  <summary>Scratchpad for when you need to edit/note snippets</summary>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>Scratchpad for when you need to edit/note snippets.</p>
+  </description>
+  <url type="homepage">https://github.com/kahnwong/scratchpad</url>
+  <releases>
+    <release version="0.1.0" date="2026-04-15"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>

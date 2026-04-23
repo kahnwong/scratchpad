@@ -1,0 +1,23 @@
+app-id: io.github.kahnwong.Scratchpad
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: scratchpad
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/scratchpad/cargo
+  build-args:
+    - --share=network
+modules:
+  - name: scratchpad
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: .
