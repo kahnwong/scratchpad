@@ -7,7 +7,13 @@ Scratchpad for when you need to edit/note snippets.
 ### apt
 
 ```bash
-sudo apt install -y flatpak-builder meson ninja-build libgtk-4-dev libadwaita-1-dev
+sudo apt install -y \
+    flatpak-builder \
+    meson \
+    ninja-build \
+    libgtk-4-dev \
+    libadwaita-1-dev \
+    libgtksourceview-5-dev
 ```
 
 ### Flatpak runtimes
@@ -20,13 +26,11 @@ flatpak install flathub org.freedesktop.Sdk.Extension.rust-stable//24.08 -y
 ## Build & run
 
 ```bash
-flatpak-builder --user --install --force-clean build-dir io.github.kahnwong.Scratchpad.yaml
-flatpak run io.github.kahnwong.Scratchpad
+cargo run
 ```
 
 ## Local build (without Flatpak)
 
 ```bash
-cargo build
-./target/debug/scratchpad
+make run
 ```
