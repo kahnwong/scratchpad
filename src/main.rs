@@ -84,11 +84,20 @@ fn build_ui(app: &Application) {
         .margin_end(6)
         .build();
 
+    let rust_button = ToggleButton::builder()
+        .label("Rust")
+        .margin_top(6)
+        .margin_bottom(6)
+        .margin_start(6)
+        .margin_end(6)
+        .build();
+
     let bottom_bar = Box::new(Orientation::Horizontal, 0);
     bottom_bar.append(&json_button);
     bottom_bar.append(&yaml_button);
     bottom_bar.append(&bash_button);
     bottom_bar.append(&go_button);
+    bottom_bar.append(&rust_button);
 
     let guard = Rc::new(Cell::new(false));
 
@@ -96,6 +105,7 @@ fn build_ui(app: &Application) {
     let yaml_button_clone = yaml_button.clone();
     let bash_button_clone = bash_button.clone();
     let go_button_clone = go_button.clone();
+    let rust_button_clone = rust_button.clone();
     let guard_clone = guard.clone();
     json_button.connect_toggled(move |btn| {
         if guard_clone.get() {
@@ -106,6 +116,7 @@ fn build_ui(app: &Application) {
             yaml_button_clone.set_active(false);
             bash_button_clone.set_active(false);
             go_button_clone.set_active(false);
+            rust_button_clone.set_active(false);
             guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("json") {
@@ -129,6 +140,7 @@ fn build_ui(app: &Application) {
     let json_button_clone = json_button.clone();
     let bash_button_clone = bash_button.clone();
     let go_button_clone = go_button.clone();
+    let rust_button_clone = rust_button.clone();
     let guard_clone = guard.clone();
     yaml_button.connect_toggled(move |btn| {
         if guard_clone.get() {
@@ -139,6 +151,7 @@ fn build_ui(app: &Application) {
             json_button_clone.set_active(false);
             bash_button_clone.set_active(false);
             go_button_clone.set_active(false);
+            rust_button_clone.set_active(false);
             guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("yaml") {
@@ -162,6 +175,7 @@ fn build_ui(app: &Application) {
     let json_button_clone = json_button.clone();
     let yaml_button_clone = yaml_button.clone();
     let go_button_clone = go_button.clone();
+    let rust_button_clone = rust_button.clone();
     let guard_clone = guard.clone();
     bash_button.connect_toggled(move |btn| {
         if guard_clone.get() {
@@ -172,6 +186,7 @@ fn build_ui(app: &Application) {
             json_button_clone.set_active(false);
             yaml_button_clone.set_active(false);
             go_button_clone.set_active(false);
+            rust_button_clone.set_active(false);
             guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("sh") {
@@ -186,6 +201,7 @@ fn build_ui(app: &Application) {
     let json_button_clone = json_button.clone();
     let yaml_button_clone = yaml_button.clone();
     let bash_button_clone = bash_button.clone();
+    let rust_button_clone = rust_button.clone();
     let guard_clone = guard.clone();
     go_button.connect_toggled(move |btn| {
         if guard_clone.get() {
@@ -196,9 +212,36 @@ fn build_ui(app: &Application) {
             json_button_clone.set_active(false);
             yaml_button_clone.set_active(false);
             bash_button_clone.set_active(false);
+            rust_button_clone.set_active(false);
             guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("go") {
+                buffer_clone.set_language(Some(&lang));
+            }
+        } else {
+            buffer_clone.set_language(None);
+        }
+    });
+
+    let buffer_clone = buffer.clone();
+    let json_button_clone = json_button.clone();
+    let yaml_button_clone = yaml_button.clone();
+    let bash_button_clone = bash_button.clone();
+    let go_button_clone = go_button.clone();
+    let guard_clone = guard.clone();
+    rust_button.connect_toggled(move |btn| {
+        if guard_clone.get() {
+            return;
+        }
+        if btn.is_active() {
+            guard_clone.set(true);
+            json_button_clone.set_active(false);
+            yaml_button_clone.set_active(false);
+            bash_button_clone.set_active(false);
+            go_button_clone.set_active(false);
+            guard_clone.set(false);
+            let lang_manager = LanguageManager::default();
+            if let Some(lang) = lang_manager.language("rust") {
                 buffer_clone.set_language(Some(&lang));
             }
         } else {
