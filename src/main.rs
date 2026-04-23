@@ -68,14 +68,24 @@ fn build_ui(app: &Application) {
         .margin_end(6)
         .build();
 
+    let bash_button = ToggleButton::builder()
+        .label("Bash")
+        .margin_top(6)
+        .margin_bottom(6)
+        .margin_start(6)
+        .margin_end(6)
+        .build();
+
     let bottom_bar = Box::new(Orientation::Horizontal, 0);
     bottom_bar.append(&json_button);
     bottom_bar.append(&yaml_button);
+    bottom_bar.append(&bash_button);
 
     let guard = Rc::new(Cell::new(false));
 
     let buffer_clone = buffer.clone();
     let yaml_button_clone = yaml_button.clone();
+    let bash_button_clone = bash_button.clone();
     let guard_clone = guard.clone();
     json_button.connect_toggled(move |btn| {
         if guard_clone.get() {
@@ -84,6 +94,7 @@ fn build_ui(app: &Application) {
         if btn.is_active() {
             guard_clone.set(true);
             yaml_button_clone.set_active(false);
+            bash_button_clone.set_active(false);
             guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("json") {
@@ -103,6 +114,7 @@ fn build_ui(app: &Application) {
 
     let buffer_clone = buffer.clone();
     let json_button_clone = json_button.clone();
+    let bash_button_clone = bash_button.clone();
     let guard_clone = guard.clone();
     yaml_button.connect_toggled(move |btn| {
         if guard_clone.get() {
@@ -111,6 +123,7 @@ fn build_ui(app: &Application) {
         if btn.is_active() {
             guard_clone.set(true);
             json_button_clone.set_active(false);
+            bash_button_clone.set_active(false);
             guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("yaml") {
@@ -122,6 +135,28 @@ fn build_ui(app: &Application) {
                 if let Ok(pretty) = serde_yaml::to_string(&parsed) {
                     buffer_clone.set_text(&pretty);
                 }
+            }
+        } else {
+            buffer_clone.set_language(None);
+        }
+    });
+
+    let buffer_clone = buffer.clone();
+    let json_button_clone = json_button.clone();
+    let yaml_button_clone = yaml_button.clone();
+    let guard_clone = guard.clone();
+    bash_button.connect_toggled(move |btn| {
+        if guard_clone.get() {
+            return;
+        }
+        if btn.is_active() {
+            guard_clone.set(true);
+            json_button_clone.set_active(false);
+            yaml_button_clone.set_active(false);
+            guard_clone.set(false);
+            let lang_manager = LanguageManager::default();
+            if let Some(lang) = lang_manager.language("sh") {
+                buffer_clone.set_language(Some(&lang));
             }
         } else {
             buffer_clone.set_language(None);
