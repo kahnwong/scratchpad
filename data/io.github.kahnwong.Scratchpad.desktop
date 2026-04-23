@@ -6,3 +6,4 @@ Icon=io.github.kahnwong.Scratchpad
 Terminal=false
 Type=Application
 Categories=GNOME;GTK;Utility;
+StartupWMClass=io.github.kahnwong.Scratchpad
