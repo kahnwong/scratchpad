@@ -16,6 +16,49 @@ fn main() {
     app.run();
 }
 
+fn make_button(label: &str) -> ToggleButton {
+    ToggleButton::builder()
+        .label(label)
+        .margin_top(6)
+        .margin_bottom(6)
+        .margin_start(6)
+        .margin_end(6)
+        .build()
+}
+
+fn deactivate_others(current: &ToggleButton, all: &[ToggleButton], guard: &Rc<Cell<bool>>) {
+    guard.set(true);
+    for btn in all {
+        if btn != current {
+            btn.set_active(false);
+        }
+    }
+    guard.set(false);
+}
+
+fn connect_lang_button(
+    button: &ToggleButton,
+    lang_id: &'static str,
+    buffer: Buffer,
+    all_buttons: Rc<Vec<ToggleButton>>,
+    guard: Rc<Cell<bool>>,
+) {
+    button.connect_toggled(move |btn| {
+        if guard.get() {
+            return;
+        }
+        if btn.is_active() {
+            deactivate_others(btn, &all_buttons, &guard);
+            let lang_manager = LanguageManager::default();
+            if let Some(lang) = lang_manager.language(lang_id) {
+                buffer.set_language(Some(&lang));
+            }
+        } else {
+            buffer.set_language(None);
+        }
+    });
+}
+
 fn build_ui(app: &Application) {
     let css = CssProvider::new();
     css.load_from_string("textview { font-size: 12pt; }");
@@ -52,249 +95,121 @@ fn build_ui(app: &Application) {
     header.set_title_widget(Some(&Box::new(Orientation::Horizontal, 0)));
     header.set_decoration_layout(Some(":close"));
 
-    let json_button = ToggleButton::builder()
-        .label("JSON")
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
-
-    let yaml_button = ToggleButton::builder()
-        .label("YAML")
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
-
-    let bash_button = ToggleButton::builder()
-        .label("Bash")
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
-
-    let go_button = ToggleButton::builder()
-        .label("Go")
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
-
-    let rust_button = ToggleButton::builder()
-        .label("Rust")
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
-
-    let python_button = ToggleButton::builder()
-        .label("Python")
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
+    let json_button = make_button("JSON");
+    let yaml_button = make_button("YAML");
+    let bash_button = make_button("Bash");
+    let go_button = make_button("Go");
+    let rust_button = make_button("Rust");
+    let python_button = make_button("Python");
 
     let bottom_bar = Box::new(Orientation::Horizontal, 0);
-    bottom_bar.append(&json_button);
-    bottom_bar.append(&yaml_button);
-    bottom_bar.append(&bash_button);
-    bottom_bar.append(&go_button);
-    bottom_bar.append(&rust_button);
-    bottom_bar.append(&python_button);
+    for btn in [
+        &json_button,
+        &yaml_button,
+        &bash_button,
+        &go_button,
+        &rust_button,
+        &python_button,
+    ] {
+        bottom_bar.append(btn);
+    }
 
     let guard = Rc::new(Cell::new(false));
+    let all_buttons = Rc::new(vec![
+        json_button.clone(),
+        yaml_button.clone(),
+        bash_button.clone(),
+        go_button.clone(),
+        rust_button.clone(),
+        python_button.clone(),
+    ]);
 
-    let buffer_clone = buffer.clone();
-    let yaml_button_clone = yaml_button.clone();
-    let bash_button_clone = bash_button.clone();
-    let go_button_clone = go_button.clone();
-    let rust_button_clone = rust_button.clone();
-    let python_button_clone = python_button.clone();
-    let guard_clone = guard.clone();
-    json_button.connect_toggled(move |btn| {
-        if guard_clone.get() {
-            return;
-        }
-        if btn.is_active() {
-            guard_clone.set(true);
-            yaml_button_clone.set_active(false);
-            bash_button_clone.set_active(false);
-            go_button_clone.set_active(false);
-            rust_button_clone.set_active(false);
-            python_button_clone.set_active(false);
-            guard_clone.set(false);
-            let lang_manager = LanguageManager::default();
-            if let Some(lang) = lang_manager.language("json") {
-                buffer_clone.set_language(Some(&lang));
+    {
+        let buffer = buffer.clone();
+        let all = all_buttons.clone();
+        let guard = guard.clone();
+        json_button.connect_toggled(move |btn| {
+            if guard.get() {
+                return;
             }
-            let (start, end) = buffer_clone.bounds();
-            let text = buffer_clone.text(&start, &end, false);
-            let parsed = serde_json::from_str::<JsonValue>(&text)
-                .or_else(|_| serde_yaml::from_str::<JsonValue>(&text));
-            if let Ok(v) = parsed {
-                if let Ok(pretty) = serde_json::to_string_pretty(&v) {
-                    buffer_clone.set_text(&pretty);
+            if btn.is_active() {
+                deactivate_others(btn, &all, &guard);
+                let lang_manager = LanguageManager::default();
+                if let Some(lang) = lang_manager.language("json") {
+                    buffer.set_language(Some(&lang));
                 }
-            }
-        } else {
-            buffer_clone.set_language(None);
-        }
-    });
-
-    let buffer_clone = buffer.clone();
-    let json_button_clone = json_button.clone();
-    let bash_button_clone = bash_button.clone();
-    let go_button_clone = go_button.clone();
-    let rust_button_clone = rust_button.clone();
-    let python_button_clone = python_button.clone();
-    let guard_clone = guard.clone();
-    yaml_button.connect_toggled(move |btn| {
-        if guard_clone.get() {
-            return;
-        }
-        if btn.is_active() {
-            guard_clone.set(true);
-            json_button_clone.set_active(false);
-            bash_button_clone.set_active(false);
-            go_button_clone.set_active(false);
-            rust_button_clone.set_active(false);
-            python_button_clone.set_active(false);
-            guard_clone.set(false);
-            let lang_manager = LanguageManager::default();
-            if let Some(lang) = lang_manager.language("yaml") {
-                buffer_clone.set_language(Some(&lang));
-            }
-            let (start, end) = buffer_clone.bounds();
-            let text = buffer_clone.text(&start, &end, false);
-            let parsed = serde_yaml::from_str::<YamlValue>(&text)
-                .or_else(|_| serde_json::from_str::<YamlValue>(&text));
-            if let Ok(v) = parsed {
-                if let Ok(pretty) = serde_yaml::to_string(&v) {
-                    buffer_clone.set_text(&pretty);
+                let (start, end) = buffer.bounds();
+                let text = buffer.text(&start, &end, false);
+                let parsed = serde_json::from_str::<JsonValue>(&text)
+                    .or_else(|_| serde_yaml::from_str::<JsonValue>(&text));
+                if let Ok(v) = parsed {
+                    if let Ok(pretty) = serde_json::to_string_pretty(&v) {
+                        buffer.set_text(&pretty);
+                    }
                 }
+            } else {
+                buffer.set_language(None);
             }
-        } else {
-            buffer_clone.set_language(None);
-        }
-    });
+        });
+    }
 
-    let buffer_clone = buffer.clone();
-    let json_button_clone = json_button.clone();
-    let yaml_button_clone = yaml_button.clone();
-    let go_button_clone = go_button.clone();
-    let rust_button_clone = rust_button.clone();
-    let python_button_clone = python_button.clone();
-    let guard_clone = guard.clone();
-    bash_button.connect_toggled(move |btn| {
-        if guard_clone.get() {
-            return;
-        }
-        if btn.is_active() {
-            guard_clone.set(true);
-            json_button_clone.set_active(false);
-            yaml_button_clone.set_active(false);
-            go_button_clone.set_active(false);
-            rust_button_clone.set_active(false);
-            python_button_clone.set_active(false);
-            guard_clone.set(false);
-            let lang_manager = LanguageManager::default();
-            if let Some(lang) = lang_manager.language("sh") {
-                buffer_clone.set_language(Some(&lang));
+    {
+        let buffer = buffer.clone();
+        let all = all_buttons.clone();
+        let guard = guard.clone();
+        yaml_button.connect_toggled(move |btn| {
+            if guard.get() {
+                return;
             }
-        } else {
-            buffer_clone.set_language(None);
-        }
-    });
+            if btn.is_active() {
+                deactivate_others(btn, &all, &guard);
+                let lang_manager = LanguageManager::default();
+                if let Some(lang) = lang_manager.language("yaml") {
+                    buffer.set_language(Some(&lang));
+                }
+                let (start, end) = buffer.bounds();
+                let text = buffer.text(&start, &end, false);
+                let parsed = serde_yaml::from_str::<YamlValue>(&text)
+                    .or_else(|_| serde_json::from_str::<YamlValue>(&text));
+                if let Ok(v) = parsed {
+                    if let Ok(pretty) = serde_yaml::to_string(&v) {
+                        buffer.set_text(&pretty);
+                    }
+                }
+            } else {
+                buffer.set_language(None);
+            }
+        });
+    }
 
-    let buffer_clone = buffer.clone();
-    let json_button_clone = json_button.clone();
-    let yaml_button_clone = yaml_button.clone();
-    let bash_button_clone = bash_button.clone();
-    let rust_button_clone = rust_button.clone();
-    let python_button_clone = python_button.clone();
-    let guard_clone = guard.clone();
-    go_button.connect_toggled(move |btn| {
-        if guard_clone.get() {
-            return;
-        }
-        if btn.is_active() {
-            guard_clone.set(true);
-            json_button_clone.set_active(false);
-            yaml_button_clone.set_active(false);
-            bash_button_clone.set_active(false);
-            rust_button_clone.set_active(false);
-            python_button_clone.set_active(false);
-            guard_clone.set(false);
-            let lang_manager = LanguageManager::default();
-            if let Some(lang) = lang_manager.language("go") {
-                buffer_clone.set_language(Some(&lang));
-            }
-        } else {
-            buffer_clone.set_language(None);
-        }
-    });
-
-    let buffer_clone = buffer.clone();
-    let json_button_clone = json_button.clone();
-    let yaml_button_clone = yaml_button.clone();
-    let bash_button_clone = bash_button.clone();
-    let go_button_clone = go_button.clone();
-    let python_button_clone = python_button.clone();
-    let guard_clone = guard.clone();
-    rust_button.connect_toggled(move |btn| {
-        if guard_clone.get() {
-            return;
-        }
-        if btn.is_active() {
-            guard_clone.set(true);
-            json_button_clone.set_active(false);
-            yaml_button_clone.set_active(false);
-            bash_button_clone.set_active(false);
-            go_button_clone.set_active(false);
-            python_button_clone.set_active(false);
-            guard_clone.set(false);
-            let lang_manager = LanguageManager::default();
-            if let Some(lang) = lang_manager.language("rust") {
-                buffer_clone.set_language(Some(&lang));
-            }
-        } else {
-            buffer_clone.set_language(None);
-        }
-    });
-
-    let buffer_clone = buffer.clone();
-    let json_button_clone = json_button.clone();
-    let yaml_button_clone = yaml_button.clone();
-    let bash_button_clone = bash_button.clone();
-    let go_button_clone = go_button.clone();
-    let rust_button_clone = rust_button.clone();
-    let guard_clone = guard.clone();
-    python_button.connect_toggled(move |btn| {
-        if guard_clone.get() {
-            return;
-        }
-        if btn.is_active() {
-            guard_clone.set(true);
-            json_button_clone.set_active(false);
-            yaml_button_clone.set_active(false);
-            bash_button_clone.set_active(false);
-            go_button_clone.set_active(false);
-            rust_button_clone.set_active(false);
-            guard_clone.set(false);
-            let lang_manager = LanguageManager::default();
-            if let Some(lang) = lang_manager.language("python3") {
-                buffer_clone.set_language(Some(&lang));
-            }
-        } else {
-            buffer_clone.set_language(None);
-        }
-    });
+    connect_lang_button(
+        &bash_button,
+        "sh",
+        buffer.clone(),
+        all_buttons.clone(),
+        guard.clone(),
+    );
+    connect_lang_button(
+        &go_button,
+        "go",
+        buffer.clone(),
+        all_buttons.clone(),
+        guard.clone(),
+    );
+    connect_lang_button(
+        &rust_button,
+        "rust",
+        buffer.clone(),
+        all_buttons.clone(),
+        guard.clone(),
+    );
+    connect_lang_button(
+        &python_button,
+        "python3",
+        buffer.clone(),
+        all_buttons,
+        guard,
+    );
 
     let toolbar_view = ToolbarView::new();
     toolbar_view.add_top_bar(&header);
