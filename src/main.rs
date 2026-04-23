@@ -113,8 +113,10 @@ fn build_ui(app: &Application) {
             }
             let (start, end) = buffer_clone.bounds();
             let text = buffer_clone.text(&start, &end, false);
-            if let Ok(parsed) = serde_json::from_str::<JsonValue>(&text) {
-                if let Ok(pretty) = serde_json::to_string_pretty(&parsed) {
+            let parsed = serde_json::from_str::<JsonValue>(&text)
+                .or_else(|_| serde_yaml::from_str::<JsonValue>(&text));
+            if let Ok(v) = parsed {
+                if let Ok(pretty) = serde_json::to_string_pretty(&v) {
                     buffer_clone.set_text(&pretty);
                 }
             }
@@ -144,8 +146,10 @@ fn build_ui(app: &Application) {
             }
             let (start, end) = buffer_clone.bounds();
             let text = buffer_clone.text(&start, &end, false);
-            if let Ok(parsed) = serde_yaml::from_str::<YamlValue>(&text) {
-                if let Ok(pretty) = serde_yaml::to_string(&parsed) {
+            let parsed = serde_yaml::from_str::<YamlValue>(&text)
+                .or_else(|_| serde_json::from_str::<YamlValue>(&text));
+            if let Ok(v) = parsed {
+                if let Ok(pretty) = serde_yaml::to_string(&v) {
                     buffer_clone.set_text(&pretty);
                 }
             }
