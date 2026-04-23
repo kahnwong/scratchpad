@@ -2,8 +2,11 @@ use adw::gtk::{gdk, Box, CssProvider, Orientation, ScrolledWindow, ToggleButton,
 use adw::prelude::*;
 use adw::{Application, ApplicationWindow, HeaderBar, ToolbarView};
 use serde_json::Value;
+use serde_yaml::Value as YamlValue;
 use sourceview5::prelude::*;
 use sourceview5::{Buffer, LanguageManager, StyleSchemeManager, View};
+use std::cell::Cell;
+use std::rc::Rc;
 
 const APP_ID: &str = "io.github.kahnwong.Scratchpad";
 
@@ -32,6 +35,8 @@ fn build_ui(app: &Application) {
     let source_view = View::with_buffer(&buffer);
     source_view.set_wrap_mode(WrapMode::Word);
     source_view.set_monospace(true);
+    source_view.set_insert_spaces_instead_of_tabs(true);
+    source_view.set_tab_width(2);
     source_view.set_left_margin(16);
     source_view.set_right_margin(16);
     source_view.set_top_margin(16);
@@ -55,12 +60,31 @@ fn build_ui(app: &Application) {
         .margin_end(6)
         .build();
 
+    let yaml_button = ToggleButton::builder()
+        .label("YAML")
+        .margin_top(6)
+        .margin_bottom(6)
+        .margin_start(6)
+        .margin_end(6)
+        .build();
+
     let bottom_bar = Box::new(Orientation::Horizontal, 0);
     bottom_bar.append(&json_button);
+    bottom_bar.append(&yaml_button);
+
+    let guard = Rc::new(Cell::new(false));
 
     let buffer_clone = buffer.clone();
+    let yaml_button_clone = yaml_button.clone();
+    let guard_clone = guard.clone();
     json_button.connect_toggled(move |btn| {
+        if guard_clone.get() {
+            return;
+        }
         if btn.is_active() {
+            guard_clone.set(true);
+            yaml_button_clone.set_active(false);
+            guard_clone.set(false);
             let lang_manager = LanguageManager::default();
             if let Some(lang) = lang_manager.language("json") {
                 buffer_clone.set_language(Some(&lang));
@@ -69,6 +93,33 @@ fn build_ui(app: &Application) {
             let text = buffer_clone.text(&start, &end, false);
             if let Ok(parsed) = serde_json::from_str::<Value>(&text) {
                 if let Ok(pretty) = serde_json::to_string_pretty(&parsed) {
+                    buffer_clone.set_text(&pretty);
+                }
+            }
+        } else {
+            buffer_clone.set_language(None);
+        }
+    });
+
+    let buffer_clone = buffer.clone();
+    let json_button_clone = json_button.clone();
+    let guard_clone = guard.clone();
+    yaml_button.connect_toggled(move |btn| {
+        if guard_clone.get() {
+            return;
+        }
+        if btn.is_active() {
+            guard_clone.set(true);
+            json_button_clone.set_active(false);
+            guard_clone.set(false);
+            let lang_manager = LanguageManager::default();
+            if let Some(lang) = lang_manager.language("yaml") {
+                buffer_clone.set_language(Some(&lang));
+            }
+            let (start, end) = buffer_clone.bounds();
+            let text = buffer_clone.text(&start, &end, false);
+            if let Ok(parsed) = serde_yaml::from_str::<YamlValue>(&text) {
+                if let Ok(pretty) = serde_yaml::to_string(&parsed) {
                     buffer_clone.set_text(&pretty);
                 }
             }
