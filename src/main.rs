@@ -1,4 +1,4 @@
-use adw::gtk::{gdk, Box, CssProvider, Orientation, ScrolledWindow, ToggleButton, WrapMode};
+use adw::gtk::{Box, CssProvider, Orientation, ScrolledWindow, ToggleButton, WrapMode, gdk, gio};
 use adw::prelude::*;
 use adw::{Application, ApplicationWindow, HeaderBar, ToolbarView};
 use serde_json::Value as JsonValue;
@@ -60,6 +60,12 @@ fn connect_lang_button(
 }
 
 fn build_ui(app: &Application) {
+    let quit_action = gio::SimpleAction::new("quit", None);
+    let app_clone = app.clone();
+    quit_action.connect_activate(move |_, _| app_clone.quit());
+    app.add_action(&quit_action);
+    app.set_accels_for_action("app.quit", &["<Primary>q"]);
+
     let css = CssProvider::new();
     css.load_from_string("textview { font-size: 12pt; }");
     adw::gtk::style_context_add_provider_for_display(
