@@ -227,8 +227,8 @@ fn build_ui(app: &Application) {
     let window = ApplicationWindow::builder()
         .application(app)
         .content(&toolbar_view)
-        .default_width(1400)
-        .default_height(900)
+        .default_width(728)
+        .default_height(450)
         .build();
 
     window.present();
