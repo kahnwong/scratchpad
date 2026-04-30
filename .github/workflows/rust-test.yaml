@@ -1,0 +1,19 @@
+name: Rust Test
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  rust-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Run Cargo Test
+        run: cargo test --all-features
