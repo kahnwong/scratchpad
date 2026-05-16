@@ -9,6 +9,12 @@ cargo = find_program('cargo', required: true)
 subdir('data')
 subdir('po')
 
+install_data(
+  'build-aux/scratchpad-launcher.sh',
+  install_dir: get_option('bindir'),
+  install_mode: 'rwxr-xr-x',
+)
+
 if get_option('buildtype') == 'release'
   rust_target = 'release'
 else

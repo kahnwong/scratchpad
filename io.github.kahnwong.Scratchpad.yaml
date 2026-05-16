@@ -1,12 +1,13 @@
 app-id: io.github.kahnwong.Scratchpad
 runtime: org.gnome.Platform
-runtime-version: '48'
+runtime-version: '50'
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
-command: scratchpad
+command: scratchpad-launcher.sh
 finish-args:
   - --share=ipc
+  - --device=dri
   - --socket=fallback-x11
   - --socket=wayland
 build-options:

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Scratchpad
 Comment=Scratchpad for when you need to edit/note snippets
-Exec=scratchpad
+Exec=scratchpad-launcher.sh
 Icon=io.github.kahnwong.Scratchpad
 Terminal=false
 Type=Application
