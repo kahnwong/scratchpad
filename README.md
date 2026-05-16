@@ -27,7 +27,6 @@ sudo apt install -y \
     libgtksourceview-5-dev
 
 flatpak install flathub org.gnome.Platform//50 org.gnome.Sdk//50 -y
-flatpak install flathub org.freedesktop.Sdk.Extension.rust-stable//24.08 -y
 ```
 
 ### Usage
