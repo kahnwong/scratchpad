@@ -112,6 +112,7 @@ fn build_ui(app: &Application) {
     let yaml_button = make_button("YAML");
     let bash_button = make_button("Bash");
     let go_button = make_button("Go");
+    let javascript_button = make_button("JavaScript");
     let rust_button = make_button("Rust");
     let python_button = make_button("Python");
 
@@ -121,6 +122,7 @@ fn build_ui(app: &Application) {
         &yaml_button,
         &bash_button,
         &go_button,
+        &javascript_button,
         &rust_button,
         &python_button,
     ] {
@@ -133,6 +135,7 @@ fn build_ui(app: &Application) {
         yaml_button.clone(),
         bash_button.clone(),
         go_button.clone(),
+        javascript_button.clone(),
         rust_button.clone(),
         python_button.clone(),
     ]);
@@ -211,6 +214,13 @@ fn build_ui(app: &Application) {
     connect_lang_button(
         &go_button,
         "go",
+        buffer.clone(),
+        all_buttons.clone(),
+        guard.clone(),
+    );
+    connect_lang_button(
+        &javascript_button,
+        "js",
         buffer.clone(),
         all_buttons.clone(),
         guard.clone(),
