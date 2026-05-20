@@ -29,11 +29,15 @@ jobs:
       - name: Set up Flatpak remote
         run: flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
       - name: Build Flatpak bundle
-        run: make bundle
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          make bundle
+          mv scratchpad.flatpak "scratchpad_${VERSION#v}.flatpak"
       - name: Publish Flatpak bundle
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" scratchpad.flatpak --clobber
+        run: gh release upload "${{ github.event.release.tag_name }}" scratchpad_*.flatpak --clobber
   deb:
     runs-on: ubuntu-latest
     steps:
