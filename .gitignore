@@ -6,3 +6,7 @@ build-dir
 .flatpak-builder
 repo
 *.flatpak
+
+# deb
+deb-root
+*.deb

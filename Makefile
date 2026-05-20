@@ -1,9 +1,14 @@
+APP_ID := io.github.kahnwong.Scratchpad
+
 install:
-	flatpak-builder --user --install --force-clean build-dir io.github.kahnwong.Scratchpad.yaml
+	flatpak-builder --user --install --force-clean build-dir $(APP_ID).yaml
 
 bundle:
-	flatpak-builder --force-clean --repo=repo build-dir io.github.kahnwong.Scratchpad.yaml
-	flatpak build-bundle repo scratchpad.flatpak io.github.kahnwong.Scratchpad
+	flatpak-builder --force-clean --repo=repo build-dir $(APP_ID).yaml
+	flatpak build-bundle repo scratchpad.flatpak $(APP_ID)
+
+deb:
+	scripts/build-deb.sh
 
 run-flatpak:
-	flatpak run io.github.kahnwong.Scratchpad
+	flatpak run $(APP_ID)
