@@ -17,7 +17,7 @@ jobs:
             flatpak \
             flatpak-builder
       - name: Restore Flatpak build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.local/share/flatpak
@@ -54,7 +54,7 @@ jobs:
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Restore Cargo build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/registry
