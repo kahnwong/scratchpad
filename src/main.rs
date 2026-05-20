@@ -153,12 +153,15 @@ fn build_ui(app: &Application) {
                 }
                 let (start, end) = buffer.bounds();
                 let text = buffer.text(&start, &end, false);
+                if text.trim().is_empty() {
+                    return;
+                }
                 let parsed = serde_json::from_str::<JsonValue>(&text)
                     .or_else(|_| serde_yaml::from_str::<JsonValue>(&text));
-                if let Ok(v) = parsed {
-                    if let Ok(pretty) = serde_json::to_string_pretty(&v) {
-                        buffer.set_text(&pretty);
-                    }
+                if let Ok(v) = parsed
+                    && let Ok(pretty) = serde_json::to_string_pretty(&v)
+                {
+                    buffer.set_text(&pretty);
                 }
             } else {
                 buffer.set_language(None);
@@ -182,12 +185,15 @@ fn build_ui(app: &Application) {
                 }
                 let (start, end) = buffer.bounds();
                 let text = buffer.text(&start, &end, false);
+                if text.trim().is_empty() {
+                    return;
+                }
                 let parsed = serde_yaml::from_str::<YamlValue>(&text)
                     .or_else(|_| serde_json::from_str::<YamlValue>(&text));
-                if let Ok(v) = parsed {
-                    if let Ok(pretty) = serde_yaml::to_string(&v) {
-                        buffer.set_text(&pretty);
-                    }
+                if let Ok(v) = parsed
+                    && let Ok(pretty) = serde_yaml::to_string(&v)
+                {
+                    buffer.set_text(&pretty);
                 }
             } else {
                 buffer.set_language(None);
