@@ -4,7 +4,7 @@ install:
 	flatpak-builder --user --install --force-clean build-dir $(APP_ID).yaml
 
 bundle:
-	flatpak-builder --install-deps-from=flathub --force-clean --repo=repo build-dir $(APP_ID).yaml
+	flatpak-builder --user --install-deps-from=flathub --force-clean --repo=repo build-dir $(APP_ID).yaml
 	flatpak build-bundle repo scratchpad.flatpak $(APP_ID)
 
 deb:
