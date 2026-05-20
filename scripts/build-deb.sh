@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-version="0.1.0"
+version="${VERSION:-0.1.0}"
 arch="$(dpkg --print-architecture)"
 deb_file="scratchpad_${version}_${arch}.deb"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
