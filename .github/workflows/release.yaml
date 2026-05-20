@@ -16,6 +16,16 @@ jobs:
           sudo apt install -y \
             flatpak \
             flatpak-builder
+      - name: Restore Flatpak build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/flatpak
+            .flatpak-builder
+            target
+          key: flatpak-${{ runner.os }}-${{ hashFiles('io.github.kahnwong.Scratchpad.yaml', 'Cargo.lock') }}
+          restore-keys: |
+            flatpak-${{ runner.os }}-
       - name: Set up Flatpak remote
         run: flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
       - name: Build Flatpak bundle
@@ -39,6 +49,16 @@ jobs:
             libgtksourceview-5-dev
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Restore Cargo build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: deb-cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            deb-cargo-${{ runner.os }}-
       - name: Build Debian package
         env:
           VERSION: ${{ github.event.release.tag_name }}
