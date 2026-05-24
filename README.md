@@ -4,14 +4,12 @@ Scratchpad for when you need to edit/note snippets.
 
 ## Features
 
-- Syntax highlighting (JSON, YAML, Bash, Go, Rust, Python)
+- Syntax highlighting (JSON, YAML, Bash, Go, JavaScript, Rust, Python)
 - Convert between JSON and YAML
 
 ## Install
 
-```bash
-make install
-```
+See [releases](https://github.com/kahnwong/scratchpad/releases).
 
 ## Development
 
@@ -29,12 +27,11 @@ sudo apt install -y \
 flatpak install flathub org.gnome.Platform//50 org.gnome.Sdk//50 -y
 ```
 
-### Usage
+### Run Locally
 
 ```bash
 cargo run
 ```
-
 
 ## Screenshots
 
