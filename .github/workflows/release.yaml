@@ -7,7 +7,16 @@ permissions:
   contents: write
 jobs:
   flatpak:
-    runs-on: ubuntu-latest
+    name: Flatpak (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
       - name: Install Flatpak dependencies
@@ -23,23 +32,37 @@ jobs:
             ~/.local/share/flatpak
             .flatpak-builder
             target
-          key: flatpak-${{ runner.os }}-${{ hashFiles('io.github.kahnwong.Scratchpad.yaml', 'Cargo.lock') }}
+          key: flatpak-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('io.github.kahnwong.Scratchpad.yaml', 'Cargo.lock') }}
           restore-keys: |
-            flatpak-${{ runner.os }}-
+            flatpak-${{ runner.os }}-${{ matrix.arch }}-
       - name: Set up Flatpak remote
         run: flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
       - name: Build Flatpak bundle
         env:
           VERSION: ${{ github.event.release.tag_name }}
+          ARCH: ${{ matrix.arch }}
         run: |
           make bundle
-          mv scratchpad.flatpak "scratchpad_${VERSION#v}.flatpak"
+          if [ "$ARCH" = "x86_64" ]; then
+            mv scratchpad.flatpak "scratchpad_${VERSION#v}.flatpak"
+          else
+            mv scratchpad.flatpak "scratchpad_${VERSION#v}_linux-${ARCH}.flatpak"
+          fi
       - name: Publish Flatpak bundle
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${{ github.event.release.tag_name }}" scratchpad_*.flatpak --clobber
   deb:
-    runs-on: ubuntu-latest
+    name: Debian (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
       - name: Install Debian package dependencies
@@ -60,9 +83,9 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: deb-cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+          key: deb-cargo-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
-            deb-cargo-${{ runner.os }}-
+            deb-cargo-${{ runner.os }}-${{ matrix.arch }}-
       - name: Build Debian package
         env:
           VERSION: ${{ github.event.release.tag_name }}
