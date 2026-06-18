@@ -1,4 +1,4 @@
-APP_ID := io.github.kahnwong.Scratchpad
+APP_ID := me.karnwong.Scratchpad
 
 install:
 	flatpak-builder --user --install --force-clean build-dir $(APP_ID).yaml

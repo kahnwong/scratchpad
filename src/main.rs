@@ -9,7 +9,7 @@ use sourceview5::prelude::*;
 use sourceview5::{Buffer, StyleSchemeManager, View};
 use syntax_tools::build_syntax_bar;
 
-const APP_ID: &str = "io.github.kahnwong.Scratchpad";
+const APP_ID: &str = "me.karnwong.Scratchpad";
 
 fn main() {
     let app = Application::builder().application_id(APP_ID).build();

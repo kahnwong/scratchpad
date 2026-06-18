@@ -18,7 +18,7 @@ Scratchpad is a Rust GTK/libadwaita app using GtkSourceView for editing snippets
 
 ## Packaging
 
-- Flatpak manifest: `io.github.kahnwong.Scratchpad.yaml`
+- Flatpak manifest: `me.karnwong.Scratchpad.yaml`
 - Meson build file: `meson.build`
 - Debian build script: `scripts/build-deb.sh`
 - GitHub release packaging workflow: `.github/workflows/release.yaml`

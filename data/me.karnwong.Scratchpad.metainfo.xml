@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.kahnwong.Scratchpad</id>
-  <launchable type="desktop-id">io.github.kahnwong.Scratchpad.desktop</launchable>
+  <id>me.karnwong.Scratchpad</id>
+  <launchable type="desktop-id">me.karnwong.Scratchpad.desktop</launchable>
   <name>Scratchpad</name>
   <summary>Scratchpad for when you need to edit/note snippets</summary>
   <metadata_license>MIT</metadata_license>

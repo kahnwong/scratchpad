@@ -2,8 +2,8 @@
 Name=Scratchpad
 Comment=Scratchpad for when you need to edit/note snippets
 Exec=scratchpad-launcher.sh
-Icon=io.github.kahnwong.Scratchpad
+Icon=me.karnwong.Scratchpad
 Terminal=false
 Type=Application
 Categories=GNOME;GTK;Utility;
-StartupWMClass=io.github.kahnwong.Scratchpad
+StartupWMClass=me.karnwong.Scratchpad
