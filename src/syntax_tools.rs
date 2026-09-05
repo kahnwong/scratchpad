@@ -4,6 +4,7 @@ use serde_json::Value as JsonValue;
 use serde_yaml::Value as YamlValue;
 use sourceview5::prelude::*;
 use sourceview5::{Buffer, LanguageManager};
+use sqlformat::{FormatOptions, QueryParams, format as format_sql_query};
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -15,6 +16,7 @@ pub fn build_syntax_bar(buffer: &Buffer) -> Box {
     let javascript_button = make_button("JavaScript");
     let rust_button = make_button("Rust");
     let python_button = make_button("Python");
+    let sql_button = make_button("SQL");
 
     let bottom_bar = Box::new(Orientation::Horizontal, 0);
     for btn in [
@@ -25,6 +27,7 @@ pub fn build_syntax_bar(buffer: &Buffer) -> Box {
         &javascript_button,
         &rust_button,
         &python_button,
+        &sql_button,
     ] {
         bottom_bar.append(btn);
     }
@@ -38,6 +41,7 @@ pub fn build_syntax_bar(buffer: &Buffer) -> Box {
         javascript_button.clone(),
         rust_button.clone(),
         python_button.clone(),
+        sql_button.clone(),
     ]);
 
     connect_json_button(
@@ -84,9 +88,10 @@ pub fn build_syntax_bar(buffer: &Buffer) -> Box {
         &python_button,
         "python3",
         buffer.clone(),
-        all_buttons,
-        guard,
+        all_buttons.clone(),
+        guard.clone(),
     );
+    connect_sql_button(&sql_button, buffer.clone(), all_buttons, guard);
 
     bottom_bar
 }
@@ -125,6 +130,26 @@ fn connect_lang_button(
         if btn.is_active() {
             deactivate_others(btn, &all_buttons, &guard);
             set_language(&buffer, lang_id);
+        } else {
+            buffer.set_language(None);
+        }
+    });
+}
+
+fn connect_sql_button(
+    button: &ToggleButton,
+    buffer: Buffer,
+    all_buttons: Rc<Vec<ToggleButton>>,
+    guard: Rc<Cell<bool>>,
+) {
+    button.connect_toggled(move |btn| {
+        if guard.get() {
+            return;
+        }
+        if btn.is_active() {
+            deactivate_others(btn, &all_buttons, &guard);
+            set_language(&buffer, "sql");
+            format_sql(&buffer);
         } else {
             buffer.set_language(None);
         }
@@ -192,6 +217,20 @@ fn format_json(buffer: &Buffer) {
     {
         buffer.set_text(&pretty);
     }
+}
+
+fn format_sql(buffer: &Buffer) {
+    let (start, end) = buffer.bounds();
+    let text = buffer.text(&start, &end, false);
+    if text.trim().is_empty() {
+        return;
+    }
+
+    buffer.set_text(&format_sql_query(
+        &text,
+        &QueryParams::None,
+        &FormatOptions::default(),
+    ));
 }
 
 fn format_yaml(buffer: &Buffer) {
