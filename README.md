@@ -4,8 +4,8 @@ Scratchpad for when you need to edit/note snippets.
 
 ## Features
 
-- Syntax highlighting (JSON, YAML, Bash, Go, JavaScript, Rust, Python)
-- Convert between JSON and YAML
+- Syntax highlighting (JSON, YAML, TOML, Bash, Go, JavaScript, Rust, Python)
+- Convert between JSON / YAML / TOML
 
 ## Install
 
