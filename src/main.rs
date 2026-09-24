@@ -56,6 +56,19 @@ fn build_ui(app: &Application) {
     source_view.set_top_margin(16);
     source_view.set_bottom_margin(16);
 
+    source_view.connect_cut_clipboard(|view| {
+        let buffer = view.buffer();
+        if buffer.has_selection() {
+            return;
+        }
+
+        let mut start = buffer.iter_at_offset(buffer.cursor_position());
+        start.set_line_offset(0);
+        let mut end = start;
+        end.forward_line();
+        buffer.select_range(&start, &end);
+    });
+
     let scrolled = ScrolledWindow::builder()
         .child(&source_view)
         .vexpand(true)
