@@ -2,7 +2,7 @@ name: Rust Test
 on:
   pull_request:
     paths-ignore:
-      - '.github/**'
+      - ".github/**"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -10,7 +10,7 @@ jobs:
   rust-test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v7
       - name: Install system dependencies
@@ -23,6 +23,6 @@ jobs:
             libadwaita-1-dev \
             libgtksourceview-5-dev
       - name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v2
       - name: Run Cargo Test
         run: cargo test --all-features
