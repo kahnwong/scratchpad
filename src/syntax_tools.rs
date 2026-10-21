@@ -238,7 +238,7 @@ mod tests {
     use serde_json::{Value, json};
 
     #[test]
-    fn converts_between_all_formats() {
+    fn converts_between_all_formats() -> Result<(), Box<dyn std::error::Error>> {
         let inputs = [
             r#"{"name":"café","enabled":true,"count":3,"ratio":1.5,"tags":["a","b"],"server":{"port":8080}}"#,
             "name: café\nenabled: true\ncount: 3\nratio: 1.5\ntags: [a, b]\nserver:\n  port: 8080\n",
@@ -253,14 +253,15 @@ mod tests {
             for target in ["json", "yaml", "toml"] {
                 let output = convert_format(input, target).expect("conversion should succeed");
                 let actual: Value = match target {
-                    "json" => serde_json::from_str(&output).unwrap(),
-                    "yaml" => serde_yaml::from_str(&output).unwrap(),
-                    "toml" => toml::from_str(&output).unwrap(),
+                    "json" => serde_json::from_str(&output)?,
+                    "yaml" => serde_yaml::from_str(&output)?,
+                    "toml" => toml::from_str(&output)?,
                     _ => unreachable!(),
                 };
                 assert_eq!(actual, expected, "input: {input}, target: {target}");
             }
         }
+        Ok(())
     }
 
     #[test]

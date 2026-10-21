@@ -33,11 +33,17 @@ fn build_ui(app: &Application) {
 
     let css = CssProvider::new();
     css.load_from_string("textview { font-size: 12pt; }");
-    adw::gtk::style_context_add_provider_for_display(
-        &gdk::Display::default().unwrap(),
-        &css,
-        adw::gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
+    if let Some(display) = gdk::Display::default() {
+        adw::gtk::style_context_add_provider_for_display(
+            &display,
+            &css,
+            adw::gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        );
+    } else {
+        eprintln!("Cannot build the UI: no display available");
+        app.quit();
+        return;
+    }
 
     let buffer = Buffer::new(None);
 
