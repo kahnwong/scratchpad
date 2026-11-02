@@ -19,8 +19,6 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
-      - name: Setup Mold
-        uses: rui314/setup-mold@v1
       - name: Install Flatpak dependencies
         run: |
           sudo apt update
@@ -39,6 +37,8 @@ jobs:
             flatpak-${{ runner.os }}-${{ matrix.arch }}-
       - name: Set up Flatpak remote
         run: flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      - name: Setup Mold
+        uses: rui314/setup-mold@v1
       - name: Build Flatpak bundle
         env:
           VERSION: ${{ github.event.release.tag_name }}
@@ -67,8 +67,6 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
-      - name: Setup Mold
-        uses: rui314/setup-mold@v1
       - name: Install Debian package dependencies
         run: |
           sudo apt update
@@ -80,6 +78,8 @@ jobs:
             libgtksourceview-5-dev
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v2
+      - name: Setup Mold
+        uses: rui314/setup-mold@v1
       - name: Restore Cargo build cache
         uses: actions/cache@v6
         with:
