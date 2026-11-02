@@ -19,6 +19,8 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
+      - name: Setup Mold
+        uses: rui314/setup-mold@v1
       - name: Install Flatpak dependencies
         run: |
           sudo apt update
@@ -65,6 +67,8 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
+      - name: Setup Mold
+        uses: rui314/setup-mold@v1
       - name: Install Debian package dependencies
         run: |
           sudo apt update
